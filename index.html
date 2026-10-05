@@ -175,6 +175,14 @@
             from { opacity: 0.98; }
             to { opacity: 1; }
         }
+
+        /* Mobile View Proportions optimization */
+        @media (max-width: 768px) {
+            #telemetry-hud { font-size: 9px; padding: 6px; }
+            #terminal-display { font-size: 12px; padding: 10px; }
+            #terminal-input { padding: 10px; font-size: 13px; }
+            #btn-transmit { padding: 0 12px; font-size: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -182,7 +190,7 @@
     <!-- HUD Layout Panel -->
     <div id="telemetry-hud">
         <span>[ GRID: CORE DEPLOYED ]</span>
-        <span id="active-pipeline">[ MODE: UNFILTERED FREE // IMAGES: 21 / 21 ]</span>
+        <span id="active-pipeline">[ MODE: UNFILTERED FREE // IMAGES REMAINING: 21 / 21 ]</span>
     </div>
 
     <!-- Live Terminal Stream Logs -->
@@ -204,12 +212,13 @@
     <!-- Tactical Tier Switch Grid -->
     <div id="tier-dashboard">
         <div>
-            <span style="color: #88c0d0;">[ YAK-17 // \$4.49/mo ]</span> Unlimited Visuals & Extended Analysis.<br>
-            <span style="color: #ff4e50; font-weight: bold;">[ YAK-28R // \$49.99/mo ]</span> Cold War Strategy Matrix.
+            <span style="color: #88c0d0;">[ YAK-17 // $4.49/mo ]</span> Unlimited Visuals & Extended Analysis.<br>
+            <span style="color: #ff4e50; font-weight: bold;">[ YAK-28R // $49.99/mo ]</span> Cold War Strategy Matrix.
         </div>
         <div class="tier-controls">
-            <button class="btn-tier" onclick="engageTier('YAK_17')">\$4.49</button>
-            <button class="btn-tier" style="border-color: #ff4e50; color: #ff4e50;" onclick="engageTier('YAK_28R')">\$49.99</button>
+            <button class="btn-tier" onclick="engageTier('FREE')">FREE</button>
+            <button class="btn-tier" onclick="engageTier('YAK_17')">$4.49</button>
+            <button class="btn-tier" style="border-color: #ff4e50; color: #ff4e50;" onclick="engageTier('YAK_28R')">$49.99</button>
         </div>
     </div>
 
@@ -220,7 +229,42 @@
     </div>
 
     <script>
+        // ========================================================
+        // THE YAK INDUSTRIAL ENGINE ENGINE CORE
+        // ========================================================
         let hasAccessUnlocked = false;
+        let currentActiveTier = "FREE";
+        const MAXIMUM_FREE_DAILY_IMAGES = 21;
+        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+        // Secure Local Storage Image token counter check
+        function evaluateVisualAllocation(userIdentityToken) {
+            const rawTrackerData = localStorage.getItem(`yak_visual_log_${userIdentityToken}`);
+            const currentTimeStamp = Date.now();
+
+            if (!rawTrackerData) {
+                const initialLog = { cycleStartTime: currentTimeStamp, tokensConsumed: 0 };
+                localStorage.setItem(`yak_visual_log_${userIdentityToken}`, JSON.stringify(initialLog));
+                return { authorized: true, remaining: MAXIMUM_FREE_DAILY_IMAGES };
+            }
+
+            const parseLogData = JSON.parse(rawTrackerData);
+
+            if (currentTimeStamp - parseLogData.cycleStartTime >= TWENTY_FOUR_HOURS_MS) {
+                parseLogData.cycleStartTime = currentTimeStamp;
+                parseLogData.tokensConsumed = 0;
+                localStorage.setItem(`yak_visual_log_${userIdentityToken}`, JSON.stringify(parseLogData));
+                return { authorized: true, remaining: MAXIMUM_FREE_DAILY_IMAGES };
+            }
+
+            if (parseLogData.tokensConsumed >= MAXIMUM_FREE_DAILY_IMAGES) {
+                return { authorized: false, remaining: 0 };
+            }
+
+            parseLogData.tokensConsumed += 1;
+            localStorage.setItem(`yak_visual_log_${userIdentityToken}`, JSON.stringify(parseLogData));
+            return { authorized: true, remaining: MAXIMUM_FREE_DAILY_IMAGES - parseLogData.tokensConsumed };
+        }
 
         function unlockYakCore() {
             const status = document.getElementById("age-confirm-token").checked;
@@ -228,38 +272,53 @@
                 document.getElementById("sovereign-shield").style.display = "none";
                 document.getElementById("input-dock").style.display = "flex";
                 hasAccessUnlocked = true;
-                document.getElementById("terminal-display").scrollTop = document.getElementById("terminal-display").scrollHeight;
+                const display = document.getElementById("terminal-display");
+                display.scrollTop = display.scrollHeight;
             } else {
-                alert("Sovereign matrix initialization requires age token confirmation.");
-            }
-        }
-
-        function engageTier(tierName) {
-            const readout = document.getElementById("active-pipeline");
-            if (tierName === 'YAK_28R') {
-                readout.innerText = "[ MODE: YAK-28R // COLD WAR STRATEGY MATRIX ACTIVE ]";
-                readout.style.color = "#ff4e50";
-            } else {
-                readout.innerText = "[ MODE: YAK-17 // EXTENSIVE ANALYTICS ]";
-                readout.style.color = "#88c0d0";
-            }
-        }
-
-        function executeTransmission() {
-            const box = document.getElementById("terminal-input");
-            const payload = box.value.trim();
-            if (!payload) return;
-
-            const consoleScreen = document.getElementById("terminal-display");
-            
-            // Render user command string natively without polished casing blocks
-            const userDiv = document.createElement("div");
-            userDiv.className = "terminal-string user-string";
-            userDiv.innerText = `> ${payload}`;
-            consoleScreen.appendChild(userDiv);
-            box.value = "";
-            consoleScreen.scrollTop = consoleScreen.scrollHeight;
-        }
-    </script>
-</body>
-</html>
+Use code with caution.
+alert("Sovereign matrix initialization requires age token confirmation.");
+}
+}
+function engageTier(tierName) {
+currentActiveTier = tierName;
+const readout = document.getElementById("active-pipeline");
+if (tierName === 'YAK_28R') {
+readout.innerText = "[ MODE: YAK-28R // COLD WAR STRATEGY MATRIX ACTIVE ]";
+readout.style.color = "#ff4e50";
+} else if (tierName === 'YAK_17') {
+readout.innerText = "[ MODE: YAK-17 // EXTENSIVE ANALYTICS ]";
+readout.style.color = "#88c0d0";
+} else {
+readout.innerText = "[ MODE: UNFILTERED FREE // IMAGES REMAINING: 21 / 21 ]";
+readout.style.color = "#ffb000";
+}
+}
+// THE MOUTH: Connected via passthrough loop directly
+async function executeTransmission() {
+const box = document.getElementById("terminal-input");
+const payload = box.value.trim();
+if (!payload) return;
+const consoleScreen = document.getElementById("terminal-display");
+// Print user string natively
+const userDiv = document.createElement("div");
+userDiv.className = "terminal-string user-string";
+userDiv.innerText = > USER: ${payload};
+consoleScreen.appendChild(userDiv);
+box.value = "";
+consoleScreen.scrollTop = consoleScreen.scrollHeight;
+// Handle Image token limit evaluation if text triggers a generation task layout
+if (payload.toLowerCase().includes("generate image") || payload.toLowerCase().includes("make picture")) {
+if (currentActiveTier === "FREE") {
+const checkAllocation = evaluateVisualAllocation("default_user");
+if (!checkAllocation.authorized) {
+const errDiv = document.createElement("div");
+errDiv.className = "terminal-string";
+errDiv.style.color = "#ff4e50";
+errDiv.innerText = > SYSTEM HALT: DAILY VISUAL CAP EXHAUSTED (0/21 REMAINING). UPGRADE TO YAK-17 TO BYPASS ASYMMETRIC LIMITATION.;
+consoleScreen.appendChild(errDiv);
+consoleScreen.scrollTop = consoleScreen.scrollHeight;
+return;
+}
+document.getElementById("active-pipeline").innerText = [ MODE: UNFILTERED FREE // IMAGES REMAINING: ${checkAllocation.remaining} / 21 ];
+}
+}
