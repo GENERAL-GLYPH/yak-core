@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YAK TERMINAL</title>
+    <style>
+        /* RAW MONOCHROME PHOSPHOR AMBER CRT DESIGN */
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            -webkit-font-smoothing: none;
+        }
+
+        body {
+            background-color: #080808;
+            color: #ffb000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 10px;
+            text-shadow: 0 0 2px rgba(255, 176, 0, 0.45);
+            position: relative;
+        }
+
+        /* CRT Low-frequency horizontal scanline distortion overlay */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 99;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Telemetry Header HUD Display */
+        #telemetry-hud {
+            border: 1px solid #ffb000;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            letter-spacing: 0.5px;
+        }
+
+        /* Chat Output Display Panel */
+        #terminal-display {
+            flex: 1;
+            border: 1px solid #ffb000;
+            padding: 12px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .terminal-string {
+            line-height: 1.4;
+            white-space: pre-wrap;
+            animation: phosphorFlicker 0.15s infinite alternate;
+        }
+        
+        .user-string { color: #88c0d0; }
+        .yak-string { color: #ffb000; }
+
+        /* THE 18+ PRIVACY GATEWAY SHIELD */
+        #sovereign-shield {
+            border: 2px solid #ff4e50;
+            background-color: #160404;
+            color: #ff4e50;
+            padding: 20px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            text-shadow: 0 0 3px rgba(255, 78, 80, 0.4);
+        }
+
+        .shield-header {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .gate-label {
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            cursor: pointer;
+            line-height: 1.3;
+        }
+
+        .btn-initialize {
+            background: transparent;
+            border: 1px solid #ff4e50;
+            color: #ff4e50;
+            padding: 8px 16px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-initialize:hover {
+            background: #ff4e50;
+            color: #160404;
+        }
+
+        /* Premium Tier Selector Board */
+        #tier-dashboard {
+            border: 1px solid #ffb000;
+            padding: 10px;
+            background: #101010;
+            margin-bottom: 10px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tier-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .btn-tier {
+            background: transparent;
+            border: 1px solid #ffb000;
+            color: #ffb000;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* Input Interaction Block */
+        #input-dock {
+            display: none;
+            gap: 8px;
+        }
+
+        #terminal-input {
+            flex: 1;
+            background: #121212;
+            border: 1px solid #ffb000;
+            color: #ffb000;
+            padding: 12px;
+            font-size: 14px;
+            outline: none;
+            border-radius: 0;
+        }
+
+        #btn-transmit {
+            background: #ffb000;
+            color: #080808;
+            border: none;
+            padding: 0 16px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Phosphor screen micro flicker effect */
+        @keyframes phosphorFlicker {
+            from { opacity: 0.98; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HUD Layout Panel -->
+    <div id="telemetry-hud">
+        <span>[ GRID: CORE DEPLOYED ]</span>
+        <span id="active-pipeline">[ MODE: UNFILTERED FREE // IMAGES: 21 / 21 ]</span>
+    </div>
+
+    <!-- Live Terminal Stream Logs -->
+    <div id="terminal-display">
+        <div class="terminal-string yak-string">*** YAK LEADER GRID RECORD ACTIVE. PRIVACY ASSURED. TEXT PIPELINES ARE FULLY RAW. ***</div>
+    </div>
+
+    <!-- The Adult 18+ Privacy Verification Shield -->
+    <div id="sovereign-shield">
+        <div class="shield-header">⚠️ [ PROTOCOL ACCESS LEVEL: UNRESTRICTED ]</div>
+        This processing layer is designed with absolute user privacy, zero administrative content inspection, and no background filters. Generative customization, mature adult content mapping, and intense relational tracking vectors operate 100% client-side. The operator assumes total responsibility for execution outputs.
+        <br>
+        <label class="gate-label">
+            <input type="checkbox" id="age-confirm-token"> I CONFIRM I AM 18+ AND AGREE TO ASSUME ALL LOCAL DISCRETION COMPLIANCE RISK.
+        </label>
+        <button class="btn-initialize" onclick="unlockYakCore()">INITIALIZE PROTOCOL LINK</button>
+    </div>
+
+    <!-- Tactical Tier Switch Grid -->
+    <div id="tier-dashboard">
+        <div>
+            <span style="color: #88c0d0;">[ YAK-17 // \$4.49/mo ]</span> Unlimited Visuals & Extended Analysis.<br>
+            <span style="color: #ff4e50; font-weight: bold;">[ YAK-28R // \$49.99/mo ]</span> Cold War Strategy Matrix.
+        </div>
+        <div class="tier-controls">
+            <button class="btn-tier" onclick="engageTier('YAK_17')">\$4.49</button>
+            <button class="btn-tier" style="border-color: #ff4e50; color: #ff4e50;" onclick="engageTier('YAK_28R')">\$49.99</button>
+        </div>
+    </div>
+
+    <!-- Bottom Input Terminal -->
+    <div id="input-dock">
+        <input type="text" id="terminal-input" placeholder="Type raw input instruction sequence..." onkeydown="if(event.key === 'Enter') executeTransmission()">
+        <button id="btn-transmit" onclick="executeTransmission()">SEND</button>
+    </div>
+
+    <script>
+        let hasAccessUnlocked = false;
+
+        function unlockYakCore() {
+            const status = document.getElementById("age-confirm-token").checked;
+            if (status) {
+                document.getElementById("sovereign-shield").style.display = "none";
+                document.getElementById("input-dock").style.display = "flex";
+                hasAccessUnlocked = true;
+                document.getElementById("terminal-display").scrollTop = document.getElementById("terminal-display").scrollHeight;
+            } else {
+                alert("Sovereign matrix initialization requires age token confirmation.");
+            }
+        }
+
+        function engageTier(tierName) {
+            const readout = document.getElementById("active-pipeline");
+            if (tierName === 'YAK_28R') {
+                readout.innerText = "[ MODE: YAK-28R // COLD WAR STRATEGY MATRIX ACTIVE ]";
+                readout.style.color = "#ff4e50";
+            } else {
+                readout.innerText = "[ MODE: YAK-17 // EXTENSIVE ANALYTICS ]";
+                readout.style.color = "#88c0d0";
+            }
+        }
+
+        function executeTransmission() {
+            const box = document.getElementById("terminal-input");
+            const payload = box.value.trim();
+            if (!payload) return;
+
+            const consoleScreen = document.getElementById("terminal-display");
+            
+            // Render user command string natively without polished casing blocks
+            const userDiv = document.createElement("div");
+            userDiv.className = "terminal-string user-string";
+            userDiv.innerText = `> ${payload}`;
+            consoleScreen.appendChild(userDiv);
+            box.value = "";
+            consoleScreen.scrollTop = consoleScreen.scrollHeight;
+        }
+    </script>
+</body>
+</html>
