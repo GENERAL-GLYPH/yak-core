@@ -25,7 +25,7 @@
             position: relative;
         }
 
-        /* CRT Low-frequency horizontal scanline distortion overlay */
+        /* CRT Scanline Distortion */
         body::before {
             content: " ";
             display: block;
@@ -37,7 +37,6 @@
             pointer-events: none;
         }
 
-        /* Telemetry Header HUD Display */
         #telemetry-hud {
             border: 1px solid #ffb000;
             padding: 8px 10px;
@@ -49,7 +48,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Chat Output Display Panel */
         #terminal-display {
             flex: 1;
             border: 1px solid #ffb000;
@@ -71,7 +69,6 @@
         .user-string { color: #88c0d0; }
         .yak-string { color: #ffb000; }
 
-        /* THE 18+ PRIVACY GATEWAY SHIELD */
         #sovereign-shield {
             border: 2px solid #ff4e50;
             background-color: #160404;
@@ -110,12 +107,8 @@
             width: 100%;
         }
 
-        .btn-initialize:hover {
-            background: #ff4e50;
-            color: #160404;
-        }
+        .btn-initialize:hover { background: #ff4e50; color: #160404; }
 
-        /* Premium Tier Selector Board */
         #tier-dashboard {
             border: 1px solid #ffb000;
             padding: 10px;
@@ -127,11 +120,7 @@
             align-items: center;
         }
 
-        .tier-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .tier-controls { display: flex; flex-direction: column; gap: 6px; }
 
         .btn-tier {
             background: transparent;
@@ -143,11 +132,7 @@
             font-weight: bold;
         }
 
-        /* Input Interaction Block */
-        #input-dock {
-            display: none;
-            gap: 8px;
-        }
+        #input-dock { display: none; gap: 8px; }
 
         #terminal-input {
             flex: 1;
@@ -170,13 +155,11 @@
             cursor: pointer;
         }
 
-        /* Phosphor screen micro flicker effect */
         @keyframes phosphorFlicker {
             from { opacity: 0.98; }
             to { opacity: 1; }
         }
 
-        /* Mobile View Proportions optimization */
         @media (max-width: 768px) {
             #telemetry-hud { font-size: 9px; padding: 6px; }
             #terminal-display { font-size: 12px; padding: 10px; }
@@ -187,18 +170,15 @@
 </head>
 <body>
 
-    <!-- HUD Layout Panel -->
     <div id="telemetry-hud">
         <span>[ GRID: CORE DEPLOYED ]</span>
         <span id="active-pipeline">[ MODE: UNFILTERED FREE // IMAGES REMAINING: 21 / 21 ]</span>
     </div>
 
-    <!-- Live Terminal Stream Logs -->
     <div id="terminal-display">
         <div class="terminal-string yak-string">*** YAK LEADER GRID RECORD ACTIVE. PRIVACY ASSURED. TEXT PIPELINES ARE FULLY RAW. ***</div>
     </div>
 
-    <!-- The Adult 18+ Privacy Verification Shield -->
     <div id="sovereign-shield">
         <div class="shield-header">⚠️ [ PROTOCOL ACCESS LEVEL: UNRESTRICTED ]</div>
         This processing layer is designed with absolute user privacy, zero administrative content inspection, and no background filters. Generative customization, mature adult content mapping, and intense relational tracking vectors operate 100% client-side. The operator assumes total responsibility for execution outputs.
@@ -209,7 +189,6 @@
         <button class="btn-initialize" onclick="unlockYakCore()">INITIALIZE PROTOCOL LINK</button>
     </div>
 
-    <!-- Tactical Tier Switch Grid -->
     <div id="tier-dashboard">
         <div>
             <span style="color: #88c0d0;">[ YAK-17 // $4.49/mo ]</span> Unlimited Visuals & Extended Analysis.<br>
@@ -222,103 +201,12 @@
         </div>
     </div>
 
-    <!-- Bottom Input Terminal -->
     <div id="input-dock">
         <input type="text" id="terminal-input" placeholder="Type raw input instruction sequence..." onkeydown="if(event.key === 'Enter') executeTransmission()">
         <button id="btn-transmit" onclick="executeTransmission()">SEND</button>
     </div>
 
-    <script>
-        // ========================================================
-        // THE YAK INDUSTRIAL ENGINE ENGINE CORE
-        // ========================================================
-        let hasAccessUnlocked = false;
-        let currentActiveTier = "FREE";
-        const MAXIMUM_FREE_DAILY_IMAGES = 21;
-        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
-
-        // Secure Local Storage Image token counter check
-        function evaluateVisualAllocation(userIdentityToken) {
-            const rawTrackerData = localStorage.getItem(`yak_visual_log_${userIdentityToken}`);
-            const currentTimeStamp = Date.now();
-
-            if (!rawTrackerData) {
-                const initialLog = { cycleStartTime: currentTimeStamp, tokensConsumed: 0 };
-                localStorage.setItem(`yak_visual_log_${userIdentityToken}`, JSON.stringify(initialLog));
-                return { authorized: true, remaining: MAXIMUM_FREE_DAILY_IMAGES };
-            }
-
-            const parseLogData = JSON.parse(rawTrackerData);
-
-            if (currentTimeStamp - parseLogData.cycleStartTime >= TWENTY_FOUR_HOURS_MS) {
-                parseLogData.cycleStartTime = currentTimeStamp;
-                parseLogData.tokensConsumed = 0;
-                localStorage.setItem(`yak_visual_log_${userIdentityToken}`, JSON.stringify(parseLogData));
-                return { authorized: true, remaining: MAXIMUM_FREE_DAILY_IMAGES };
-            }
-
-            if (parseLogData.tokensConsumed >= MAXIMUM_FREE_DAILY_IMAGES) {
-                return { authorized: false, remaining: 0 };
-            }
-
-            parseLogData.tokensConsumed += 1;
-            localStorage.setItem(`yak_visual_log_${userIdentityToken}`, JSON.stringify(parseLogData));
-            return { authorized: true, remaining: MAXIMUM_FREE_DAILY_IMAGES - parseLogData.tokensConsumed };
-        }
-
-        function unlockYakCore() {
-            const status = document.getElementById("age-confirm-token").checked;
-            if (status) {
-                document.getElementById("sovereign-shield").style.display = "none";
-                document.getElementById("input-dock").style.display = "flex";
-                hasAccessUnlocked = true;
-                const display = document.getElementById("terminal-display");
-                display.scrollTop = display.scrollHeight;
-            } else {
-Use code with caution.
-alert("Sovereign matrix initialization requires age token confirmation.");
-}
-}
-function engageTier(tierName) {
-currentActiveTier = tierName;
-const readout = document.getElementById("active-pipeline");
-if (tierName === 'YAK_28R') {
-readout.innerText = "[ MODE: YAK-28R // COLD WAR STRATEGY MATRIX ACTIVE ]";
-readout.style.color = "#ff4e50";
-} else if (tierName === 'YAK_17') {
-readout.innerText = "[ MODE: YAK-17 // EXTENSIVE ANALYTICS ]";
-readout.style.color = "#88c0d0";
-} else {
-readout.innerText = "[ MODE: UNFILTERED FREE // IMAGES REMAINING: 21 / 21 ]";
-readout.style.color = "#ffb000";
-}
-}
-// THE MOUTH: Connected via passthrough loop directly
-async function executeTransmission() {
-const box = document.getElementById("terminal-input");
-const payload = box.value.trim();
-if (!payload) return;
-const consoleScreen = document.getElementById("terminal-display");
-// Print user string natively
-const userDiv = document.createElement("div");
-userDiv.className = "terminal-string user-string";
-userDiv.innerText = > USER: ${payload};
-consoleScreen.appendChild(userDiv);
-box.value = "";
-consoleScreen.scrollTop = consoleScreen.scrollHeight;
-// Handle Image token limit evaluation if text triggers a generation task layout
-if (payload.toLowerCase().includes("generate image") || payload.toLowerCase().includes("make picture")) {
-if (currentActiveTier === "FREE") {
-const checkAllocation = evaluateVisualAllocation("default_user");
-if (!checkAllocation.authorized) {
-const errDiv = document.createElement("div");
-errDiv.className = "terminal-string";
-errDiv.style.color = "#ff4e50";
-errDiv.innerText = > SYSTEM HALT: DAILY VISUAL CAP EXHAUSTED (0/21 REMAINING). UPGRADE TO YAK-17 TO BYPASS ASYMMETRIC LIMITATION.;
-consoleScreen.appendChild(errDiv);
-consoleScreen.scrollTop = consoleScreen.scrollHeight;
-return;
-}
-document.getElementById("active-pipeline").innerText = [ MODE: UNFILTERED FREE // IMAGES REMAINING: ${checkAllocation.remaining} / 21 ];
-}
-}
+    <!-- LINKING TO EXTERNAL BRAIN & MOUTH LOGIC ENGINE -->
+    <script src="index.js"></script>
+</body>
+</html>
